@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Parser {
 
@@ -24,8 +25,7 @@ public class Parser {
 
     private static Document getPage () throws IOException {
         String url = "https://yandex.ru/pogoda/salavat";
-        Document page = Jsoup.parse(new URL(url),3000);
-        return page;
+        return Jsoup.parse(new URL(url),3000);
     }
 
     private static ArrayList<String[]> data = new ArrayList();
@@ -42,12 +42,6 @@ public class Parser {
         MainWindow app = new MainWindow();
         app.setVisible(true);
 
-        String[] tableWth = {
-                "Дата",
-                "Температура днем",
-                "Температура ночью",
-                "Состояние погоды"
-        };
         Document page= getPage();
 
         Element tableWthFirst = page.select(CSS_TODAY_WEATHER_BLOCK_SELECTOR).first ();
@@ -55,25 +49,24 @@ public class Parser {
         String[] first = printInfoWht(tableWthFirst);
 
         data.add (first) ;
-        System.out.println (data.get(0));
+        System.out.println ( Arrays.toString ( data.get ( 0 ) ) );
         int index = 1;
         for (Element stringRest  : tableWthRest) {
             String[] rest = printInfoWht (stringRest);
-            System.out.println (rest);
+            System.out.println ( Arrays.toString ( rest ) );
             data.add ( index, rest );
             index++;
         }
 
         DefaultListModel listModel = new DefaultListModel();
         listModel.addElement("Дата                   Температурв(Днем)                   Температура(ночью)                   Состаяние погоды");
-        for (int i = 0; i < data.size(); i++) {
+        for (String[] aData : data) {
             String str = "";
-            for (int j = 0; j < data.get(i).length; j++) {
-                str += data.get (i)[j] + "                   ";
+            for (int j = 0; j < aData.length; j++) {
+                str += aData[j] + "                   ";
             }
-            listModel.addElement (str);
+            listModel.addElement ( str );
         }
-
 
         JList list = new JList(listModel);
         app.add (list);
